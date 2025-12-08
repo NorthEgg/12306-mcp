@@ -5,13 +5,15 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "pnpm fastmcp inspect ./src/index.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.20.0",
   "dependencies": {
+    "axios": "^1.13.2",
     "fastmcp": "^3.25.3",
     "zod": "^4.1.13"
   }

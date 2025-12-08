@@ -1,10 +1,7 @@
-import { FastMCP } from "fastmcp";
 import { z } from "zod";
-
-const server = new FastMCP({
-  name: "12306-MCP",
-  version: "1.0.0",
-});
+import { server } from "./utils/server.ts";
+import "./utils/resources.ts";
+import "./utils/tools.ts";
 
 server.addTool({
   name: "add",
