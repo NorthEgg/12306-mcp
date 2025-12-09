@@ -6,7 +6,6 @@ server.addResource({
   name: "stations",
   description: "所有站点数据",
   async load() {
-    const text = "";
     return {
       text: JSON.stringify(STATIONS),
     };
