@@ -11,7 +11,7 @@ import {
   TIME_ZONE,
   TRAIN_FILTERS,
   WEB_URL,
-} from "../constant/index.ts";
+} from "../constant/index.js";
 import type {
   InterlineData,
   InterlineInfo,
@@ -22,7 +22,7 @@ import type {
   StationData,
   TicketData,
   TicketInfo,
-} from "../types/index";
+} from "../types/index.js";
 import axios from "axios";
 import { format, parse } from "date-fns";
 
@@ -115,7 +115,7 @@ export function parseCookies(cookies: Array<string>): Record<string, string> {
   const cookieRecord: Record<string, string> = {};
   cookies.forEach((cookie) => {
     // 提取键值对部分（去掉 Path、HttpOnly 等属性）
-    const keyValuePart = cookie.split(";")[0];
+    const keyValuePart = cookie.split(";")[0]!;
     // 分割键和值
     const [key, value] = keyValuePart.split("=");
     // 存入对象
@@ -153,10 +153,10 @@ export function parseTicketsInfo(
   for (const ticket of ticketsData) {
     const prices = extractPrices(ticket.yp_info_new, ticket.seat_discount_info, ticket);
     const dw_flag = extractDWFlags(ticket.dw_flag);
-    const startHours = parseInt(ticket.start_time.split(":")[0]);
-    const startMinutes = parseInt(ticket.start_time.split(":")[1]);
-    const durationHours = parseInt(ticket.lishi.split(":")[0]);
-    const durationMinutes = parseInt(ticket.lishi.split(":")[1]);
+    const startHours = parseInt(ticket.start_time.split(":")[0]!);
+    const startMinutes = parseInt(ticket.start_time.split(":")[1]!);
+    const durationHours = parseInt(ticket.lishi.split(":")[0]!);
+    const durationMinutes = parseInt(ticket.lishi.split(":")[1]!);
     const startDate = parse(ticket.start_train_date, "yyyyMMdd", new Date());
     startDate.setHours(startHours, startMinutes);
     const arriveDate = startDate;
@@ -169,8 +169,8 @@ export function parseTicketsInfo(
       start_time: ticket.start_time,
       arrive_time: ticket.arrive_time,
       lishi: ticket.lishi,
-      from_station: map[ticket.from_station_telecode],
-      to_station: map[ticket.to_station_telecode],
+      from_station: map[ticket.from_station_telecode] as string,
+      to_station: map[ticket.to_station_telecode] as string,
       from_station_telecode: ticket.from_station_telecode,
       to_station_telecode: ticket.to_station_telecode,
       prices: prices,
@@ -194,23 +194,23 @@ export function extractPrices(
       i * DISCOUNT_STR_LENGTH,
       (i + 1) * DISCOUNT_STR_LENGTH
     );
-    discounts[discount_str[0]] = parseInt(discount_str.slice(1), 10);
+    discounts[discount_str[0] as string] = parseInt(discount_str.slice(1), 10);
   }
 
   for (let i = 0; i < yp_info.length / PRICE_STR_LENGTH; i++) {
     const price_str = yp_info.slice(i * PRICE_STR_LENGTH, (i + 1) * PRICE_STR_LENGTH);
-    var seat_type_code;
+    let seat_type_code: string;
     if (parseInt(price_str.slice(6, 10), 10) >= 3000) {
       // 根据12306的js逆向出来的，不懂。
       seat_type_code = "W"; // 为无座
-    } else if (!Object.keys(SEAT_TYPES).includes(price_str[0])) {
+    } else if (!Object.keys(SEAT_TYPES).includes(price_str[0] as string)) {
       seat_type_code = "H"; // 其他坐席
     } else {
-      seat_type_code = price_str[0];
+      seat_type_code = price_str[0]!;
     }
     const seat_type = SEAT_TYPES[seat_type_code as keyof typeof SEAT_TYPES];
     const price = parseInt(price_str.slice(1, 6), 10) / 10;
-    const discount = seat_type_code in discounts ? discounts[seat_type_code] : null;
+    const discount = seat_type_code! in discounts ? discounts[seat_type_code!] : null;
     prices.push({
       seat_name: seat_type.name,
       short: seat_type.short,
@@ -223,7 +223,7 @@ export function extractPrices(
   return prices;
 }
 
-export function extractDWFlags(dw_flag_str: string): string[] {
+export function extractDWFlags(dw_flag_str: string): (string | undefined)[] {
   const dwFlagList = dw_flag_str.split("#");
   let result = [];
   if ("5" == dwFlagList[0]) {
@@ -233,9 +233,9 @@ export function extractDWFlags(dw_flag_str: string): string[] {
     result.push(DW_FLAGS[1]);
   }
   if (dwFlagList.length > 2) {
-    if ("Q" == dwFlagList[2].substring(0, 1)) {
+    if ("Q" == dwFlagList[2]!.substring(0, 1)) {
       result.push(DW_FLAGS[2]);
-    } else if ("R" == dwFlagList[2].substring(0, 1)) {
+    } else if ("R" == dwFlagList[2]!.substring(0, 1)) {
       result.push(DW_FLAGS[3]);
     }
   }
@@ -277,7 +277,7 @@ export function filterTicketsInfo<T extends TicketInfo | InterlineInfo>(
   }
   // startTime 过滤
   result = result.filter((ticketInfo) => {
-    const startTimeHour = parseInt(ticketInfo.start_time.split(":")[0], 10);
+    const startTimeHour = parseInt(ticketInfo.start_time.split(":")[0]!, 10);
     if (startTimeHour >= earliestStartTime && startTimeHour < latestStartTime) {
       return true;
     }
@@ -364,7 +364,7 @@ export function formatTicketsInfo(ticketsInfo: TicketInfo[]): string {
   return result;
 }
 
-export async function getLCQueryPath(): Promise<string> {
+export async function getLCQueryPath(): Promise<string | undefined> {
   const html = await make12306Request<string>(LCQUERY_INIT_URL);
   if (html == null) {
     throw new Error("Error: get 12306 web page failed.");
@@ -394,7 +394,7 @@ export function parseInterlinesInfo(interlineData: InterlineData[]): InterlineIn
       middle_station_name: ticket.middle_station_name,
       end_station_code: ticket.end_station_code,
       end_station_name: ticket.end_station_name,
-      start_train_code: interlineTickets[0].start_train_code,
+      start_train_code: interlineTickets[0]!.start_train_code,
       first_train_no: ticket.first_train_no,
       second_train_no: ticket.second_train_no,
       train_count: ticket.train_count,
@@ -415,10 +415,10 @@ export function parseInterlinesTicketInfo(interlineTicketsData: InterlineTicketD
       interlineTicketData.seat_discount_info,
       interlineTicketData
     );
-    const startHours = parseInt(interlineTicketData.start_time.split(":")[0]);
-    const startMinutes = parseInt(interlineTicketData.start_time.split(":")[1]);
-    const durationHours = parseInt(interlineTicketData.lishi.split(":")[0]);
-    const durationMinutes = parseInt(interlineTicketData.lishi.split(":")[1]);
+    const startHours = parseInt(interlineTicketData.start_time.split(":")[0]!);
+    const startMinutes = parseInt(interlineTicketData.start_time.split(":")[1]!);
+    const durationHours = parseInt(interlineTicketData.lishi.split(":")[0]!);
+    const durationMinutes = parseInt(interlineTicketData.lishi.split(":")[1]!);
     const startDate = parse(interlineTicketData.start_train_date, "yyyyMMdd", new Date());
     startDate.setHours(startHours, startMinutes);
     const arriveDate = startDate;
@@ -503,10 +503,10 @@ export function parseRouteStationsInfo(routeStationsData: RouteStationData[]): R
 }
 
 export function formatRouteStationsInfo(routeStationsInfo: RouteStationInfo[]): string {
-  let result = `${routeStationsInfo[0].station_train_code}次列车（${
-    routeStationsInfo[0].train_class_name
+  let result = `${routeStationsInfo[0]!.station_train_code}次列车（${
+    routeStationsInfo[0]!.train_class_name
   } ${
-    routeStationsInfo[0].service_type == "0" ? "无空调" : "有空调"
+    routeStationsInfo[0]!.service_type == "0" ? "无空调" : "有空调"
   }）\n站序|车站|车次|到达时间|出发时间|历时(hh:mm)\n`;
   routeStationsInfo.forEach((routeStationInfo, index) => {
     result += `${index + 1}|${routeStationInfo.station_name}|${

@@ -1,5 +1,5 @@
-import { STATIONS } from "../constant/index.ts";
-import { server } from "./server.ts";
+import { STATIONS } from "../constant/index.js";
+import { server } from "./server.js";
 
 server.addResource({
   uri: "data://all-stations",

@@ -1,11 +1,13 @@
 {
-  "name": "12306-mcp",
-  "version": "1.0.0",
+  "name": "@northegg/12306-mcp",
+  "version": "0.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "build/index.js",
   "type": "module",
+  "bin": "./build/index.js",
   "scripts": {
-    "dev": "pnpm fastmcp inspect ./src/index.ts"
+    "dev": "pnpm fastmcp inspect ./src/index.ts",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
@@ -17,5 +19,9 @@
     "date-fns": "^4.1.0",
     "fastmcp": "^3.25.3",
     "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.2",
+    "typescript": "^5.9.3"
   }
 }

@@ -103,7 +103,7 @@ export type TicketInfo = {
   from_station_telecode: string;
   to_station_telecode: string;
   prices: Price[];
-  dw_flag: string[];
+  dw_flag: (string | undefined)[];
 };
 
 export interface Price {
@@ -112,7 +112,7 @@ export interface Price {
   seat_type_code: string;
   num: string;
   price: number;
-  discount: number | null;
+  discount: number | null | undefined;
 }
 
 export type InterlineTicketData = {

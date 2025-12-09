@@ -8,8 +8,8 @@ import {
   SEARCH_API_BASE,
   STATIONS,
   TIME_ZONE,
-} from "../constant/index.ts";
-import { server } from "./server.ts";
+} from "../constant/index.js";
+import { server } from "./server.js";
 import { TZDate } from "@date-fns/tz";
 import { z } from "zod";
 import {
@@ -26,7 +26,7 @@ import {
   parseRouteStationsInfo,
   parseTicketsData,
   parseTicketsInfo,
-} from "./index.ts";
+} from "./index.js";
 import type {
   InterlineData,
   InterlineInfo,
@@ -86,7 +86,7 @@ server.addTool({
       if (!(city in CITY_CODES)) {
         result[city] = { error: "未检索到城市。" };
       } else {
-        result[city] = CITY_CODES[city];
+        result[city] = CITY_CODES[city]!;
       }
     }
     return JSON.stringify(result);
@@ -112,7 +112,7 @@ server.addTool({
       if (!(stationName in NAME_STATIONS)) {
         result[stationName] = { error: "未检索到城市。" };
       } else {
-        result[stationName] = NAME_STATIONS[stationName];
+        result[stationName] = NAME_STATIONS[stationName]!;
       }
     }
     return JSON.stringify(result);
@@ -243,10 +243,10 @@ server.addTool({
     if (queryResponse === null || queryResponse === undefined) {
       return "Error: get tickets data failed. ";
     }
-    const ticketsData = parseTicketsData(queryResponse.data.result);
+    const ticketsData = parseTicketsData(queryResponse.data["result"]);
     let ticketsInfo: TicketInfo[];
     try {
-      ticketsInfo = parseTicketsInfo(ticketsData, queryResponse.data.map);
+      ticketsInfo = parseTicketsInfo(ticketsData, queryResponse.data["map"]);
     } catch (error) {
       console.error("Error: parse tickets info failed. ", error);
       return "Error: parse tickets info failed. ";
@@ -479,7 +479,7 @@ server.addTool({
 
     const searchData = searchResponse.data[0];
     const queryParams = new URLSearchParams({
-      "leftTicketDTO.train_no": searchData.train_no,
+      "leftTicketDTO.train_no": searchData!.train_no,
       "leftTicketDTO.train_date": departDate,
       rand_code: "",
     });

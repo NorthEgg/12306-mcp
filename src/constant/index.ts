@@ -1,5 +1,5 @@
 import type { InterlineInfo, StationData, TicketData, TicketInfo } from "../types/index";
-import { getLCQueryPath, getStations } from "../utils/index.ts";
+import { getLCQueryPath, getStations } from "../utils/index.js";
 
 export const TIME_ZONE = "Asia/Shanghai";
 export const API_BASE = "https://kyfw.12306.cn";
@@ -156,13 +156,13 @@ export const TRAIN_FILTERS = {
     if ("dw_flag" in ticketInfo) {
       return ticketInfo.dw_flag.includes("复兴号") ? true : false;
     }
-    return ticketInfo.ticketList[0].dw_flag.includes("复兴号") ? true : false;
+    return ticketInfo.ticketList[0]!.dw_flag.includes("复兴号") ? true : false;
   },
   S: (ticketInfo: TicketInfo | InterlineInfo) => {
     if ("dw_flag" in ticketInfo) {
       return ticketInfo.dw_flag.includes("智能动车组") ? true : false;
     }
-    return ticketInfo.ticketList[0].dw_flag.includes("智能动车组") ? true : false;
+    return ticketInfo.ticketList[0]!.dw_flag.includes("智能动车组") ? true : false;
   },
 };
 export const TIME_COMPARETOR = {
@@ -174,13 +174,13 @@ export const TIME_COMPARETOR = {
     }
     const startTimeA = ticketInfoA.start_time.split(":");
     const startTimeB = ticketInfoB.start_time.split(":");
-    const hourA = parseInt(startTimeA[0]);
-    const hourB = parseInt(startTimeB[0]);
+    const hourA = parseInt(startTimeA[0]!);
+    const hourB = parseInt(startTimeB[0]!);
     if (hourA != hourB) {
       return hourA - hourB;
     }
-    const minuteA = parseInt(startTimeA[1]);
-    const minuteB = parseInt(startTimeB[1]);
+    const minuteA = parseInt(startTimeA[1]!);
+    const minuteB = parseInt(startTimeB[1]!);
     return minuteA - minuteB;
   },
   arriveTime: (
@@ -194,25 +194,25 @@ export const TIME_COMPARETOR = {
     }
     const arriveTimeA = ticketInfoA.arrive_time.split(":");
     const arriveTimeB = ticketInfoB.arrive_time.split(":");
-    const hourA = parseInt(arriveTimeA[0]);
-    const hourB = parseInt(arriveTimeB[0]);
+    const hourA = parseInt(arriveTimeA[0]!);
+    const hourB = parseInt(arriveTimeB[0]!);
     if (hourA != hourB) {
       return hourA - hourB;
     }
-    const minuteA = parseInt(arriveTimeA[1]);
-    const minuteB = parseInt(arriveTimeB[1]);
+    const minuteA = parseInt(arriveTimeA[1]!);
+    const minuteB = parseInt(arriveTimeB[1]!);
     return minuteA - minuteB;
   },
   duration: (ticketInfoA: TicketInfo | InterlineInfo, ticketInfoB: TicketInfo | InterlineInfo) => {
     const lishiTimeA = ticketInfoA.lishi.split(":");
     const lishiTimeB = ticketInfoB.lishi.split(":");
-    const hourA = parseInt(lishiTimeA[0]);
-    const hourB = parseInt(lishiTimeB[0]);
+    const hourA = parseInt(lishiTimeA[0]!);
+    const hourB = parseInt(lishiTimeB[0]!);
     if (hourA != hourB) {
       return hourA - hourB;
     }
-    const minuteA = parseInt(lishiTimeA[1]);
-    const minuteB = parseInt(lishiTimeB[1]);
+    const minuteA = parseInt(lishiTimeA[1]!);
+    const minuteB = parseInt(lishiTimeB[1]!);
     return minuteA - minuteB;
   },
 };
